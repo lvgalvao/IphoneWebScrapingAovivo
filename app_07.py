@@ -71,7 +71,10 @@ def get_max_price(conn):
     result = cursor.fetchone()
     return result[0], result[1]
 
-if __name__ == '__main__':
+async def send_telegram_message(text):
+    await bot.send_message(chat_id=CHAT_ID, text=text)
+
+async def main():
     # Configuração do banco de dados
     conn = create_connection()
     setup_database(conn)
@@ -88,17 +91,21 @@ if __name__ == '__main__':
         # Comparação de preços
         if max_price is None or current_price > max_price:
             print(f"Preço maior detectado: {current_price}")
+            await send_telegram_message(f"COMPRAR AGORA: {current_price}")
             max_price = current_price  # Atualiza o maior preço
             max_price_timestamp = product_info['timestamp']  # Atualiza o timestamp do maior preço
         else:
             print(f"O maior preço registrado é {max_price} em {max_price_timestamp}")
+            await send_telegram_message(f"O preço não alterou... espere mais um pouco {max_price} esse preço foi em {max_price_timestamp}")
 
         # Salva os dados no banco de dados SQLite
         save_to_database(conn, product_info)
         print("Dados salvos no banco:", product_info)
         
         # Aguarda 10 segundos antes da próxima execução
-        time.sleep(10)
+        await asyncio.sleep(10)
 
     # Fecha a conexão com o banco de dados
     conn.close()
+
+asyncio.run(main())
