@@ -13,5 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copia o código da aplicação para o contêiner
 COPY . .
 
+# Expõe a porta do PostgreSQL (opcional, caso o banco esteja no mesmo contêiner)
+EXPOSE 5432
+
 # Instrução CMD para rodar o aplicativo
-CMD ["python", "app_8_postgres.py"]
+CMD ["python", "app_08_postgres.py"]
